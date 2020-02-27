@@ -23,10 +23,21 @@
 	(let [all-pc (concat pc [cp])
 				all-pnc (->> (get-in board cp)
 										 (get-same-neighbour cp board)
-										 (remove (into #{} (concat pnc pc)))
+										 (remove (set (concat pnc pc)))
 										 (concat pnc))]
 	 (if (zero? (count all-pnc))
 		all-pc
 		(fill-board board (first all-pnc) (rest all-pnc) all-pc)))))
 
 (fill-board board [1 1])
+
+(defn fill
+ [board new-color old-color x y]
+ (if (= (get-in board [x y]) old-color)
+	board
+	(-> board
+			(update-in [x y] new-color)
+			(fill new-color old-color x (dec y))
+			(fill new-color old-color x (inc y))
+			(fill new-color old-color (dec x) y)
+			(fill new-color old-color (inc x) y))))
